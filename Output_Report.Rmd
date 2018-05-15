@@ -1,9 +1,9 @@
 ---
 title: '<img src="LogoColorRegular.jpg" style="float: right;width: 80px; "/> Oregon
-  DEQ Water Quality Status and Trends report for the Molalla-Pudding French Prairie North Santiam AgWQ
+  DEQ Water Quality Status and Trends report for the Curry County AgWQ
   Management Area'
 author: ''
-date: "April 2018"
+date: "May 2018"
 output:
   word_document:
     fig_caption: yes
@@ -19,14 +19,14 @@ always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = '//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown')
+# knitr::opts_knit$set(root.dir = '//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown')
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE, 
                       warning=FALSE, 
                       error = TRUE,
                       cache = FALSE,
                       results = 'hide',
-                      include = FALSE)
+                      include = TRUE)
 library(RCurl)
 library(XML)
 library(dataRetrieval)
@@ -52,25 +52,25 @@ tbls  <- captioner(prefix="**Table")
 figs <- captioner(prefix="  \n**Figure")
 ```
 
-```{r Query}
+```{r Query, include = FALSE}
 
 input <- list(action_button = c(0))
 input$parms <- c('Total Phosphorus', 'Total Suspended Solids',
                 'Total Suspended Solids', 'Bacteria', 'Temperature', 'pH', 'Dissolved Oxygen', 'Total Nitrogen')
-input$select <- "North Coast" #input
-input$dates <- c("2000-01-01", "2018-04-01") #input
+input$select <- "Curry County" #input
+input$dates <- c("2000-01-01", "2018-06-01") #input
 input$db <- c('DEQ', 'Water Quality Portal')
 #input$db2 <- c('Water Quality Portal')
 
-agwqma <- readOGR(dsn = 'app/GIS', layer = 'ODA_AgWQMA', verbose = FALSE)
-tribal_lands <- readOGR(dsn = 'E:/GitHub/StatusAndTrendsRMarkdown/GIS', layer = 'tl_2017_or_aiannh', verbose = FALSE)
-hucs <- readOGR(dsn = 'app/GIS', layer = 'WBD_HU8', verbose = FALSE)
-HUClist <- read.csv('app/PlanHUC_LU.csv')
-stations_huc <- read.csv('app/station_wbd_12132016.csv')
-ph_crit <- read.csv('app/PlanOWRDBasinpH_LU.csv')
+agwqma <- readOGR(dsn = '//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/GIS', layer = 'ODA_AgWQMA', verbose = FALSE)
+tribal_lands <- readOGR(dsn = '//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/GIS', layer = 'tl_2017_or_aiannh', verbose = FALSE)
+hucs <- readOGR(dsn = '//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/GIS', layer = 'WBD_HU8', verbose = FALSE)
+HUClist <- read.csv('//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/PlanHUC_LU.csv')
+stations_huc <- read.csv('//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/station_wbd_12132016.csv')
+ph_crit <- read.csv('//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/PlanOWRDBasinpH_LU.csv')
 ph_crit <- merge(ph_crit, HUClist, by.x = 'plan_name', by.y = 'PlanName', all.x = TRUE)
-lu_parms <- read.csv('app/WQP_Table3040_Names.csv', stringsAsFactors = FALSE)
-wq_limited <- read.csv('app/wq_limited_df_temp_bact_ph_DO_TP_Sediment_2012.csv')
+lu_parms <- read.csv('//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/WQP_Table3040_Names.csv', stringsAsFactors = FALSE)
+wq_limited <- read.csv('//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/wq_limited_df_temp_bact_ph_DO_TP_Sediment_2012.csv')
 OAR_LU <- read.csv("Lookups/OAR_LU.csv")
 Ben_use_LU <- read.csv("Lookups/stations.csv", na.strings = c("", "NA"))
 BC_LU <- read.csv("Lookups/BC_LU.csv")
@@ -81,20 +81,8 @@ source('functions/Rmarkdown_query.R')
 source('functions/01_DataQuery.R')
 source("functions/funHelpers.R")
 
-if(input$select == 'Middle Willamette') {
-  load("RdataFiles/Middle Willamette.df.all.2018-01-22.Rdata")
-} else if(input$select == 'Tualatin River Subbasin'){
-  load(file = "RdataFiles/Tualatin River Subbasin.df.all.2018-01-25.Rdata")
-} else if(input$select == 'Upper Deschutes') {
-  load(file = "RdataFiles/Upper Deschutes.df.all.2018-01-18.Rdata")
-} else if (input$select == "Crooked River") {
-  load(file = "RdataFiles/Crooked River.df.all.2018-03-08.Rdata")
-} else if (input$select == "Middle John Day") {
-  load(file = "//deqhq1/tmdl/AgWQM/DataAnalysis/Middle John Day/2018/Middle John Day.df.all.2018-03-12.Rdata")
-} else if (input$select == "North Coast") {
-  load(file = "North Coast_df_all_2018-04-26.Rdata")
-} else if (input$select == "Molalla-Pudding French Prairie North Santiam") {
-  load(file = "//deqhq1/tmdl/AgWQM/DataAnalysis/Molalla-Pudding French Prairie North Santiam/2018/MolallaPuddingFPNS_2018-04-04.Rdata")
+if(input$select == 'Curry County') {
+  load("//deqhq1/TMDL/AgWQM/DataAnalysis/Curry County/2018/Curry_County_2018-05-08.Rdata")
 } else {
   df.all<-query(select =  input$select,
                 parms = input$parms,
@@ -112,22 +100,21 @@ if(input$select == 'Middle Willamette') {
     df.all <- rbind(sub, df.all)
   } 
   
-# save(df.all, file = paste0("RdataFiles/", input$select, ".df.all.", Sys.Date(), ".Rdata"))
-  # save(df.all, file = "//deqhq1/tmdl/AgWQM/DataAnalysis/Molalla-Pudding French Prairie North Santiam/2018/MolallaPuddingFPNS_2018-04-04.Rdata")
+#save(df.all, file = "//deqhq1/tmdl/AgWQM/DataAnalysis/Curry County/2018/Curry_County_2018-05-08.Rdata")
 
-#load(file = "RdataFiles/Mid Coast.df.all.2018-02-12.Rdata")
+#load(file = "//deqhq1/tmdl/AgWQM/DataAnalysis/Curry County/2018/Curry_County_2018-05-08.Rdata")
 
 ```
 
-```{r Create_dataframes}
+```{r Create_dataframes, include = FALSE}
 library(plyr)
 library(tidyr)
 source("functions/funHelpers.R")
 source("functions/funClean.R")
 source("functions/funSeaKen.R")
 
-load('app/NLCD2011_OR.Rdata')
-load('app/OR_cats.Rdata')
+load('//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/NLCD2011_OR.Rdata')
+load('//deqhq1/TMDL/AgWQM/DataAnalysis/StatusAndTrendsRMarkdown/app/OR_cats.Rdata')
 
 #if there are duplicate lat and longs per station, use this function. 
 df.all <- remove_stn_dups(df.all)
@@ -231,6 +218,7 @@ stn_nlcd_df <- landUseAnalysis(all.sp, cats, NLCD2011)
 #   rm(sub)
 # }
 
+write.csv(stns, "E:/GitHub/StatusAndTrendsRMarkdown/Lookups/stations_Curry_County.csv")
 
 ```
 
@@ -248,7 +236,7 @@ The report presents data and analysis that will help DEQ fulfill its roles in th
 DEQ basin coordinators review pertinent information including this report as part of ODA's biennial review. DEQ basin coordinators recommend changes and additional data and resources necessary to achieve water quality criterion and meet TMDL load allocations through ODA's survey. 
 
 ## Basin Contact
-```{r basin contac, results="asis"}
+```{r basin-contact, results="asis"}
 library(knitr)
 library(dplyr)
 library(plyr)
