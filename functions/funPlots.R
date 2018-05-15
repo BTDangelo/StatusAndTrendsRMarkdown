@@ -231,7 +231,7 @@ plot.Temperature <- function(new_data,
   elem_text <- element_text(face = "bold")
   
   if (selectSpawning == 'No spawning' & any(selectUse %in% 
-                                            c('Cool water species', 
+                                            c('Cool water species', 'Oceans and Bays',
                                               'No Salmonid Use/Out of State'))) {
     g <- ggplot(data = new_data, aes(x = Sampled, y = sdadm), color = 'black') + 
       geom_point() +   theme_gdocs() + theme(axis.title = elem_text) +
@@ -272,7 +272,7 @@ plot.Temperature <- function(new_data,
     
     ####Draw WQS 
     if (selectSpawning != 'No spawning' & any(selectUse %in% 
-                                              c('Cool water species', 
+                                              c('Cool water species', 'Oceans and Bays', 
                                                 'No Salmonid Use/Out of State'))) {
       spn_index <- which(new_data$criteria_value == 13)
       spn_diff <- diff(spn_index)
@@ -1016,6 +1016,10 @@ plot.DO<-function(new_data,
   } else if (selectUseDO == 'Warm-Water Aquatic Life') {
     d<-data.frame(x = c(x.min, x.max), y = rep(5.5, 2),
                   variable = rep("Warm-Water Aquatic Life", 2))
+  #} else if (selectUseDO == 'Ocean Waters') {
+  #  d<-data.frame(x = , y = rep ,
+  #                variable == 
+  #}
   } else {
     d<-data.frame(x = c(x.min, x.max), y = rep(6.5, 2),
                   variable = rep("Estuarine Waters", 2))
